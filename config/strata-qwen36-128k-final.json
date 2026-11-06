@@ -12,12 +12,14 @@
   "--tail-skip",
   "6",
   "--prompt-batch",
-  "2048",
+  "1024",
   "--kv-whole",
   "--vram-reserve-mib",
   "7000",
   "--conversation-cache-min-free-mib",
-  "1024"
+  "1024",
+  "--ram-experts-mib",
+  "8000"
  ],
  "cwd": "E:\\PolyStrata",
  "tokenizer": "E:\\PolyStrata-data\\packs\\qwen36-ud-q4_k_m\\tokenizer",
