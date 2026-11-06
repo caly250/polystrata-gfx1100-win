@@ -8,14 +8,16 @@
   "--expert-profile",
   "E:\\PolyStrata-data\\packs\\qwen36-ud-q4_k_m\\expert-profile.txt",
   "--conversation-cache-mib",
-  "auto",
+  "4096",
   "--tail-skip",
   "6",
   "--prompt-batch",
   "2048",
   "--kv-whole",
   "--vram-reserve-mib",
-  "1536"
+  "1536",
+  "--conversation-cache-min-free-mib",
+  "1024"
  ],
  "cwd": "E:\\PolyStrata",
  "tokenizer": "E:\\PolyStrata-data\\packs\\qwen36-ud-q4_k_m\\tokenizer",
