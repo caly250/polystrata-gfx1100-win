@@ -15,7 +15,7 @@
   "2048",
   "--kv-whole",
   "--vram-reserve-mib",
-  "1536",
+  "7000",
   "--conversation-cache-min-free-mib",
   "1024"
  ],
@@ -30,8 +30,12 @@
  "port": 8080,
  "backend": "hip",
  "open_browser": false,
- "reasoning_budget_tokens": 4096,
+ "reasoning_budget_tokens": 1024,
  "fit_max_tokens": true,
  "answer_room": true,
- "reasoning_loop_recovery": "stop"
+ "reasoning_loop_recovery": "stop",
+ "env": {
+  "PATH": "E:\\PolyStrata\\.rocm-win\\Lib\\site-packages\\_rocm_sdk_devel\\bin;C:\\Windows\\System32;C:\\Windows"
+ },
+ "parallel": 2
 }
