@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "title": "PolyStrata on AMD Radeon PRO W7800 (gfx1100), Windows 11",
+    "measured": "2026-11-06",
+    "engine_version": "0.1.45",
+    "engine_source": "local-hip build",
+    "model": "Qwen3.6-35B-A3B UD-Q4_K_M",
+    "model_params": "35B total / 3B active, 256 experts top-8",
+    "model_file_size_gb": 22.66,
+    "quantization": "Unsloth Dynamic Q4_K_M",
+    "reported_by": "community",
+    "notes": "All numbers are from the engine's own timing lines (strata serve: prompt N tokens = ... read in M ms). No numbers are estimated."
+  },
+  "hardware": {
+    "gpu": "AMD Radeon PRO W7800",
+    "arch": "gfx1100",
+    "vram_mib": 30704,
+    "vram_gb": 29.98,
+    "cpu": "11th Gen Intel Core i5-11400 @ 2.60GHz",
+    "cpu_features": "AVX-512",
+    "ram_gb": 32,
+    "os": "Windows 11",
+    "disk": "KIOXIA EXCERIA G2 NVMe SSD (E:)",
+    "rocm": "10.2.0a20260930 (TheRock wheels in .rocm-win)",
+    "hipblaslt_version": 100500,
+    "hipblaslt_tuning_table": "tools/hip/gfx1100-hipblaslt-100500.txt (version match)"
+  },
+  "model_load": {
+    "load_time_s": 62.0,
+    "experts_total": 10496,
+    "experts_in_vram": 10496,
+    "experts_vram_gib": 18.7,
+    "expert_cache_hit_rate": "100.0%",
+    "cpu_threads": 12,
+    "note": "All routed experts fit in VRAM on a 30 GB card. No expert is ever streamed from RAM or SSD."
+  },
+  "prefill_sweep_by_context_config": [
+    {"ctx_config": 32768,  "prompt_batch": 2048, "vram_dedicated_gb": 24.70, "vram_shared_gb": 0.42, "prompt_tokens": 4290,  "prefill_tok_s": 1518.5, "ttft_s": 2.8,   "overflow": false},
+    {"ctx_config": 32768,  "prompt_batch": 2048, "vram_dedicated_gb": 24.70, "vram_shared_gb": 0.42, "prompt_tokens": 20445, "prefill_tok_s": 1910.1, "ttft_s": 10.7,  "overflow": false},
+    {"ctx_config": 65536,  "prompt_batch": 2048, "vram_dedicated_gb": 25.39, "vram_shared_gb": 0.42, "prompt_tokens": 20444, "prefill_tok_s": 1717.0, "ttft_s": 11.9,  "overflow": false},
+    {"ctx_config": 65536,  "prompt_batch": 2048, "vram_dedicated_gb": 25.39, "vram_shared_gb": 0.43, "prompt_tokens": 41989, "prefill_tok_s": 1259.1, "ttft_s": 33.3,  "overflow": false},
+    {"ctx_config": 98304,  "prompt_batch": 2048, "vram_dedicated_gb": 26.07, "vram_shared_gb": 0.42, "prompt_tokens": 41989, "prefill_tok_s": 1243.2, "ttft_s": 33.8,  "overflow": false},
+    {"ctx_config": 98304,  "prompt_batch": 2048, "vram_dedicated_gb": 26.07, "vram_shared_gb": 0.43, "prompt_tokens": 92314, "prefill_tok_s": 707.0,  "ttft_s": 130.6, "overflow": false},
+    {"ctx_config": 131072, "prompt_batch": 2048, "vram_dedicated_gb": 26.77, "vram_shared_gb": 0.43, "prompt_tokens": 41989, "prefill_tok_s": 1219.6, "ttft_s": 34.4,  "overflow": false},
+    {"ctx_config": 131072, "prompt_batch": 2048, "vram_dedicated_gb": 26.77, "vram_shared_gb": 0.43, "prompt_tokens": 92314, "prefill_tok_s": 693.8,  "ttft_s": 133.1, "overflow": false},
+    {"ctx_config": 262144, "prompt_batch": 4096, "vram_dedicated_gb": 28.53, "vram_shared_gb": 3.24, "prompt_tokens": 41993, "prefill_tok_s": 570.2,  "ttft_s": 73.6,  "overflow": true},
+    {"ctx_config": 262144, "prompt_batch": 4096, "vram_dedicated_gb": 28.53, "vram_shared_gb": 3.24, "prompt_tokens": 92318, "prefill_tok_s": 443.2,  "ttft_s": 208.3, "overflow": true}
+  ],
+  "decode": [
+    {"label": "short chat",              "prompt_tokens": 18,   "generated": 32,  "decode_tok_s": 163.0, "drafts_accepted": "23/26"},
+    {"label": "short chat",              "prompt_tokens": 21,   "generated": 256, "decode_tok_s": 128.6, "drafts_accepted": "150/212"},
+    {"label": "4K context",              "prompt_tokens": 4161, "generated": 200, "decode_tok_s": 152.4, "drafts_accepted": "139/149"},
+    {"label": "long output",             "prompt_tokens": 2080, "generated": 200, "decode_tok_s": 152.5, "drafts_accepted": "126/148"},
+    {"label": "after 4K prompt (verify)","prompt_tokens": 2000, "generated": 200, "decode_tok_s": 95.2,  "drafts_accepted": null}
+  ],
+  "key_findings": [
+    "All 10,496 routed experts fit in VRAM (18.7 GiB) on a 30 GB card - expert cache hit rate is 100%, nothing is streamed.",
+    "A 256K context is NOT free on this card: KV cache (5 GiB) plus a 4096-token prompt batch pushed dedicated VRAM to 28.53 GB and spilled 3.24 GB into shared (GTT) memory, dropping prefill from ~1,220 to ~570 tok/s (a 2.2x loss).",
+    "128K context with --prompt-batch 2048 keeps shared memory at 0.43 GB (no spill) and delivers ~1,220 tok/s prefill on a 42K-token prompt.",
+    "Long-context slowdown beyond ~40K tokens is dominated by attention complexity, not by spilling: at 92K tokens prefill is ~694-707 tok/s even with zero spill.",
+    "MTP speculative decoding works well on this model: draft acceptance is 70-93% on ordinary conversations, which is where the 128-176 tok/s decode comes from.",
+    "The conversation cache stays off with 32 GB of RAM ('not enough free RAM to park conversations'). Multi-turn agent use re-prefills every turn."
+  ]
+}

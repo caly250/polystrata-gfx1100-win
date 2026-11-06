@@ -1,0 +1,16 @@
+{
+ "source": "local-hip",
+ "backend": "hip",
+ "platform": "windows-x64",
+ "version": "0.1.45",
+ "archs": [
+  "gfx1100"
+ ],
+ "rocm": "10.2.0a20260930",
+ "hipblaslt_version": 100500,
+ "vision": "none",
+ "lib_dirs": [
+  "E:\\PolyStrata\\.rocm-win\\Lib\\site-packages\\_rocm_sdk_devel\\bin"
+ ],
+ "src": "1b61f830fc11fbe4"
+}
